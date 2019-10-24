@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Rocket from './Rocket';
 
 class Launch extends Component {
 
@@ -7,10 +8,9 @@ class Launch extends Component {
     let launch = this.props.launch;
 
     return (
-      <li>
-        <h2> { launch.mission_name } </h2>
-        <div> Flight Number: { launch.flight_number } </div>
-      </li>
+      <React.Fragment>
+        <Rocket rocket={launch.rocket} {...this.props} />
+      </React.Fragment>
     );
   }
 }

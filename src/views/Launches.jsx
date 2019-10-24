@@ -1,40 +1,40 @@
 import React, { Component } from 'react';
 import ConnectedView from './ConnectedView';
-import {fetchLaunchesIfNeeded} from "../actions/Launches";
+import { fetchLaunchesIfNeeded } from "../actions/Launches";
 import Launch from '../components/Launch';
+import Accordion from '../components/accordion/Accordion';
+import { fetchRocketsIfNeeded } from '../actions/Rockets';
 
 class LaunchesView extends Component {
   componentDidMount() {
-    const { dispatch, launchesCollection } = this.props;
-    fetchLaunchesIfNeeded({ dispatch, launchesCollection });
+    const { dispatch, launchCollection, rocketCollection } = this.props;
+    fetchLaunchesIfNeeded({ dispatch, launchCollection });
+    fetchRocketsIfNeeded({ dispatch, rocketCollection });
   }
 
   getContent() {
-    const { launchCollection } = this.props;
+    const { launchCollection, rocketCollection } = this.props;
 
-    if (!launchCollection || launchCollection.fetching) {
+    if ((!launchCollection || launchCollection.fetching)
+        && (!rocketCollection || rocketCollection.fetching)) {
       return <div> LOADING </div>;
     }
 
-    if (!launchCollection.launches.length) {
+    if (!launchCollection.launches.length && !rocketCollection.rockets.length) {
       return <div> NO DATA </div>;
     }
 
-    let launches = [];
+    console.log(rocketCollection.rockets)
 
-    for (let i = 0; i < launchCollection.launches.length; i++) {
-      const launch = launchCollection.launches[i];
-
-      launches.push(
-        <Launch {...{
-          key: launch.launch_id,
-          launch
-        }} />
-
-      )
-    }
-
-    return <ul>{launches}</ul>;
+    return <Accordion
+      titleProp='mission_name'
+      items={launchCollection.launches}
+      itemTemplate={(launch) => <Launch {...{
+        key: launch.launch_id,
+        launch,
+        rocket: rocketCollection.rockets.find(r => r.rocket_id === launch.rocket.rocket_id)
+      }} />}
+    ></Accordion>;
   }
 
   render() {
